@@ -17,6 +17,17 @@ struct Inventory {
 }
 
 impl Inventory {
+    fn new() -> Self {
+        Self { shirts: Vec::new() }
+    }
+    fn giveaway3(&self, user_preference: Option<ShirtColor>) -> ShirtColor {
+        if let Some(value) = user_preference {
+            value
+        } else {
+            self.most_stocked()
+        }
+    }
+
     fn giveaway2(&self, user_preference: Option<ShirtColor>) -> ShirtColor {
         match user_preference {
             Some(value) => value,
