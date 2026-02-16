@@ -65,7 +65,7 @@ fn main() {
                 
                 let new_expense = tracker.add(name, amount, tx_type);
                 println!(" Expense added successfully!");
-                println!("ID: {}, Name: {}, Amount: ${:.2}, Type: {:?}", 
+                println!("ID: {}, Name: {}, Amount: Naria{:.2}, Type: {:?}", 
                         new_expense.id, new_expense.name, new_expense.amount, new_expense.tx_type);
             }else if input == "2" {
                 let expenses = tracker.view_all();
