@@ -129,7 +129,7 @@ fn main() {
                 let id: u8 = id_input.trim().parse().expect("Please enter a valid ID");
 
                 if tracker.delete(id){
-                    println!(" Your Expence is Deleted ");
+                    println!(" Your Expense is Deleted ");
                 }else {
                     println!("Expense with ID {} not found!", id);
                 }
