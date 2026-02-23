@@ -1,13 +1,19 @@
-use std::{
-    any::Any,
-    net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
-};
 
-use axum::{Router, routing::get};
-// use chrono::naive::serde;
-use thiserror::Error;
-use tokio::net::TcpListener;
+mod app;
+mod models;
+mod router;
+mod handlers;
+mod error;
+mod services;
+mod config;
+
+// use handlers::{get_authors, get_author_by_id};
+use serde::Serialize;
+use axum::{response::IntoResponse, Json, http::StatusCode};
+
+
 use tracing_subscriber::{EnvFilter, fmt};
+
 
 fn trace_setup() {
     let env_filter: EnvFilter =
@@ -21,23 +27,19 @@ fn trace_setup() {
     
 }
 
-#[derive(Debug, Error)]
-enum AppError {
-    #[error("Resource not found")]
-    NotFound,
-    #[error("Internal Server Error: {0}")]
-    InternalServerError(String),
-    #[error("Invalid Input, cannot be processed: {field} - {message}")]
-    UnProcessableEntity { field: String, message: String },
-    #[error("Environement Variable is missing: {0}")]
-    MissingEnvironmentVarible(String),
-    #[error("Failed to Parse: {0}")]
-    ParsingError(String),
-}
 
-async fn health() -> &'static str {
-    "Hello, World!, app is working fine"
-}
+
+
+
+
+
+
+
+
+
+
+
+
 
 // async fn connect_db() -> Result<sqlx::PgPool, AppError> {
 //     let db_url = get_env_vars::<String>("DATABASE_URL".to_string()).unwrap();
@@ -61,60 +63,42 @@ async fn health() -> &'static str {
 //     Ok(pg_pool)
 // }
 
-#[derive(Debug)]
-pub struct Post {
-    id: uuid::Uuid,
-    title: String,
-    content: String,
-    author: uuid::Uuid,
-    created_at: chrono::DateTime<chrono::Utc>,
+
+
+
+
+
+#[derive(Serialize)]
+struct HealthResponse {
+    status: String,
+    message : String
 }
 
-#[derive(Debug)]
-pub struct Author {
-    id: uuid::Uuid,
-    name: String,
-    email: String,
-    created_at: chrono::DateTime<chrono::Utc>,
+async fn root_handler() -> impl IntoResponse {
+    let response =  HealthResponse {
+        status: "ok". to_string(),
+        message: "Welcome to my Blog Api".to_string(),
+    }; (StatusCode::OK, Json(response))
 }
 
-fn create_app() -> Router {
-    Router::new().route("/health", get(health))
-}
 
-fn get_env_vars<T>(key: String) -> Result<T, AppError>
-where
-    T: std::str::FromStr,
-    T::Err: std::fmt::Display,
-{
-    let value = std::env::var(&key).map_err(|_| AppError::MissingEnvironmentVarible(key))?;
-    value
-        .parse::<T>()
-        .map_err(|err| AppError::ParsingError(err.to_string()))
 
-    // let value = std::env::var(key)
-    //     .map_err(|err| format!("Failed to read environment variable: {}", err))?;
-    // value.parse::<T>().map_err(|_| "".to_string())
-}
+
+
+
+
+
+
+
+
+
+
+
+
 
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
     trace_setup();
-    let app: Router = create_app();
-    let listening_port: u16 = 8080;
-
-    let port: u16 = get_env_vars::<u16>("PORT".to_string()).unwrap_or(listening_port);
-    tracing::info!("Starting server on port: {}", port);
-    let listening_address: SocketAddr = SocketAddr::from((Ipv6Addr::UNSPECIFIED, port));
-
-    let binder: TcpListener = TcpListener::bind(listening_address)
-        .await
-        .expect("Failed to bind address");
-
-    // .expect(String::from(AppError::NotFound).as_str());
-
-    // println!("Server is listening on {}", binder.local_addr().unwrap());
-    tracing::info!("Server is listening on: {}", binder.local_addr().unwrap());
-    axum::serve(binder, app).await.unwrap();
+    app::serve().await;
 }
