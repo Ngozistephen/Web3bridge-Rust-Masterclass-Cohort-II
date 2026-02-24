@@ -1,5 +1,5 @@
 
-//  All file templates for the Axum framework
+
 
 
 pub const DEPENDENCIES: &str = r#"[dependencies]
@@ -25,8 +25,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 "#;
 
-// CONCEPT: Functions that return String are used when we need dynamic content
-// (e.g. inserting the project_name at runtime). Constants can't do this.
+
 pub fn main_rs(project_name: &str) -> String {
     format!(
         r#"mod handlers;

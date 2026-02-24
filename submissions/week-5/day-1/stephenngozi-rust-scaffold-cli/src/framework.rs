@@ -2,7 +2,6 @@ use crate::templates::{axum, actix};
 
 
 
-// Model our domain with an Enum
 #[derive(Debug)]
 pub enum Framework {
     Axum,

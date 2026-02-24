@@ -1,5 +1,5 @@
 
-// templates/actix.rs — All file templates for the Actix-web framework
+
 
 
 pub const DEPENDENCIES: &str = r#"[dependencies]

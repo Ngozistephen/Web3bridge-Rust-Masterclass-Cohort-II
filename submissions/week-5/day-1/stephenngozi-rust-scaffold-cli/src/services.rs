@@ -42,9 +42,9 @@ pub fn scaffold_project(
         println!("  {} {}", "Created".green().bold(), dir.dimmed());
     }
 
-    // --------------------------------------------------------
-    // Write Cargo.toml
-    // --------------------------------------------------------
+    
+    // Cargo.toml
+    
     let cargo_toml = format!(
         r#"[package]
 name = "{name}"
@@ -63,14 +63,14 @@ edition = "2021"
     // --------------------------------------------------------
     write_file(&format!("{}/.env", project_name), framework.env_content())?;
 
-    // --------------------------------------------------------
+    
     // Write .gitignore
-    // --------------------------------------------------------
+    
     write_file(&format!("{}/.gitignore", project_name), templates::GITIGNORE)?;
 
-    // --------------------------------------------------------
+
     // Write src/main.rs
-    // --------------------------------------------------------
+
     write_file(
         &format!("{}/src/main.rs", project_name),
         &framework.main_rs_content(project_name),
@@ -117,7 +117,6 @@ pub fn write_file(path: &str, content: &str) -> Result<(), Box<dyn std::error::E
 
 
 // Delete a scaffolded project directory
-// We check the path exists first to give a friendlier error message.
 pub fn delete_project(project_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let path = std::path::Path::new(project_name);
 

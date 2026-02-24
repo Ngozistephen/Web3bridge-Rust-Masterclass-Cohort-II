@@ -1,5 +1,4 @@
 
-// handlers.rs — User interaction and post-scaffold output
 
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
