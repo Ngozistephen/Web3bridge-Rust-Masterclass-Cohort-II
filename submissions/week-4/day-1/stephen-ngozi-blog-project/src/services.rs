@@ -1,25 +1,27 @@
 
 use uuid::Uuid;
-use crate::models::{Author, AuthorList, AppState, BlogPost, CreatePostRequest, UpdatePostRequest};
+use crate::models::{Author, AuthorList, BlogPost, CreatePostRequest, UpdatePostRequest};
 use crate::error::AppError;
+use crate::app_state::SharedState;
 use axum::http::StatusCode;
 
-pub async fn fetch_all_authors(state: &AppState) -> AuthorList {
-    let authors = state.authors.read().await;
-    let data: Vec<Author> = authors
-        .iter()
-        .map(|(_, a)| Author {
-            id: a.id,
-            name: a.name.clone(),
-            email: a.email.clone(),
-        })
-        .collect();
+pub async fn fetch_all_authors(state: SharedState) -> AuthorList {
+    let authors = state.authors.as_ref().read().await;
+    // let data: Vec<Author> = authors
+    //     .iter()
+    //     .map(|(_, a)| Author {
+    //         id: a.id,
+    //         name: a.name.clone(),
+    //         email: a.email.clone(),
+    //     })
+    //     .collect();
+    let data: Vec<Author> = authors.values().cloned().collect();
     let total = data.len();
     AuthorList { data, total }
 }
 
-pub async fn fetch_author_by_id(state: &AppState, id: Uuid) -> Result<Author, AppError> {
-    let authors = state.authors.read().await;
+pub async fn fetch_author_by_id(state: SharedState, id: Uuid) -> Result<Author, AppError> {
+    let authors = state.authors.as_ref().read().await;
     authors
         .get(&id)
         .cloned()
@@ -28,7 +30,7 @@ pub async fn fetch_author_by_id(state: &AppState, id: Uuid) -> Result<Author, Ap
 
 
 pub async fn insert_post (
-    state: &AppState,
+    state: &SharedState,
      payload: CreatePostRequest,) 
     -> Result<BlogPost, AppError>
 
@@ -65,7 +67,7 @@ pub async fn insert_post (
         updated_at:now
     };
 
-    let mut posts = state.posts.write().await;
+    let mut posts = state.posts.as_ref().write().await;
     posts.insert(id, post.clone());
 
     Ok(post)
@@ -85,16 +87,16 @@ pub async fn insert_post (
 //         }
 // }
 
-pub async fn fetch_post_by_id(state: &AppState, id: Uuid) -> Result<BlogPost, AppError> {
-    let posts = state.posts.read().await;
+pub async fn fetch_post_by_id(state: SharedState, id: Uuid) -> Result<BlogPost, AppError> {
+    let posts = state.posts.as_ref().read().await;
     posts.get(&id).cloned().ok_or(AppError::NotFound)
 }
 
 // Get all Posts
 
 
-pub async fn fetch_all_posts(state: &AppState, author_id: Option<Uuid>) -> Vec<BlogPost> {
-    let posts = state.posts.read().await;
+pub async fn fetch_all_posts(state: SharedState, author_id: Option<Uuid>) -> Vec<BlogPost> {
+    let posts = state.posts.as_ref().read().await;
     match author_id {
         None => posts.values().cloned().collect(),
         Some(id) => posts
@@ -113,12 +115,12 @@ pub async fn fetch_all_posts(state: &AppState, author_id: Option<Uuid>) -> Vec<B
 
 
 pub async fn modify_post ( 
-     state: &AppState,
+     state: SharedState,
      id: Uuid,
      payload: UpdatePostRequest,
     )-> Result<BlogPost, AppError> {
 
-    let mut posts = state.posts.write().await;
+    let mut posts = state.posts.as_ref().write().await;
 
     let post = posts.get_mut(&id).ok_or(AppError::NotFound)?;
 
@@ -154,7 +156,7 @@ pub async fn modify_post (
 
 
 pub async fn remove_post ( 
-        state: &AppState,
+        state: SharedState,
         id: Uuid,
     )-> Result<StatusCode, AppError> {
 

@@ -1,5 +1,7 @@
 use sqlx::PgPool;
-use std::sync::Arc;
+use std::{sync::Arc,collections::HashMap};
+use tokio::sync::RwLock;
+use crate::models::{Author,BlogPost};
 
 
 
@@ -17,7 +19,7 @@ pub struct  AppState {
 impl AppState {
     pub fn new() -> Self {
         Self {
-            authors: Arc::new(RwLock::new(seed_authors())),
+            authors: Arc::new(RwLock::new(HashMap::new())),
             posts: Arc::new(RwLock::new(HashMap::new())),
             // next_id: Arc::new(RwLock::new(0u64)),
         }
@@ -29,3 +31,5 @@ impl Default for AppState {
         Self::new()
     }
 }
+
+pub type SharedState = Arc<AppState>;

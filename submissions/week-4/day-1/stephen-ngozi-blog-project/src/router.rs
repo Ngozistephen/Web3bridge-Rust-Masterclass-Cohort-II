@@ -1,13 +1,13 @@
 use axum::{ Router,  routing::get};
 use crate::handlers::{health_handler, get_posts,create_post,get_post,update_post,delete_post  };
-use crate::models::{AppState};
+use crate::app_state::SharedState;
 use crate::root_handler;
 
 
 
-pub fn create_app() -> Router {
+pub fn create_router(state: SharedState) -> Router {
 
-    let state = AppState::new();
+    // let state = AppState::new();
 
     Router::new()
     

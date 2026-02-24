@@ -6,6 +6,7 @@ mod handlers;
 mod error;
 mod services;
 mod config;
+mod app_state;
 
 // use handlers::{get_authors, get_author_by_id};
 use serde::Serialize;
@@ -13,6 +14,7 @@ use axum::{response::IntoResponse, Json, http::StatusCode};
 
 
 use tracing_subscriber::{EnvFilter, fmt};
+use app::create_app;
 
 
 fn trace_setup() {
@@ -98,7 +100,9 @@ async fn root_handler() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
-    dotenvy::dotenv().ok();
-    trace_setup();
-    app::serve().await;
+
+    create_app().await
+    // dotenvy::dotenv().ok();
+    // trace_setup();
+    // app::serve().await;
 }

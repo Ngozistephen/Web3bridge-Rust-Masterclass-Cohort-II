@@ -2,9 +2,10 @@
 use crate::services;
 use crate::error::AppError;
 use serde_json::json;
-use crate::models::{AppState, AuthorList, BlogPost, CreatePostRequest, UpdatePostRequest};
+use crate::models::{ AuthorList, BlogPost, CreatePostRequest, UpdatePostRequest};
 use axum::{Json, extract::{Path,State}, http::StatusCode, response::{IntoResponse}};
 use uuid::Uuid;
+use crate::app_state::SharedState;
 
 pub async  fn health_handler()-> impl IntoResponse {
     (
@@ -24,12 +25,12 @@ pub async fn health() -> &'static str {
 }
 
 
-pub async fn get_authors(State(state): State<AppState>) -> Json<AuthorList> {
+pub async fn get_authors(State(state): State<SharedState>) -> Json<AuthorList> {
     Json(services::fetch_all_authors(&state).await)
 }
 
 pub async fn get_author_by_id(
-    State(state): State<AppState>,
+    State(state): State<SharedState>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
     let author = services::fetch_author_by_id(&state, id).await?;
@@ -37,13 +38,13 @@ pub async fn get_author_by_id(
 }
 
 
-pub async fn get_posts(State(state): State<AppState>) -> impl IntoResponse {
+pub async fn get_posts(State(state): State<SharedState>) -> impl IntoResponse {
     let posts = services::fetch_all_posts(&state, None).await;
     Json(posts)
 }
 
 pub async fn get_post(
-    State(state): State<AppState>,
+    State(state): State<SharedState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<BlogPost>, AppError> {
     let post = services::fetch_post_by_id(&state, id).await?;
@@ -51,7 +52,7 @@ pub async fn get_post(
 }
 
 pub async fn create_post(
-    State(state): State<AppState>,
+    State(state): State<SharedState>,
     Json(payload): Json<CreatePostRequest>,
 ) -> Result<(StatusCode, Json<BlogPost>), AppError> {
     let post = services::insert_post(&state, payload).await?;
@@ -59,7 +60,7 @@ pub async fn create_post(
 }
 
 pub async fn update_post(
-    State(state): State<AppState>,
+    State(state): State<SharedState>,
     Path(id): Path<Uuid>,
     Json(payload): Json<UpdatePostRequest>,
 ) -> Result<Json<BlogPost>, AppError> {
@@ -68,7 +69,7 @@ pub async fn update_post(
 }
 
 pub async fn delete_post(
-    State(state): State<AppState>,
+    State(state): State<SharedState>,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, AppError> {
     services::remove_post(&state, id).await?;

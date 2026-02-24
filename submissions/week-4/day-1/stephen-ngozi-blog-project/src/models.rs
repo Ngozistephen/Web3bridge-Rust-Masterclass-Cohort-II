@@ -8,7 +8,7 @@ use tokio:: sync::RwLock;
 
 
 // Author 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Author {
     pub id: Uuid,
     pub name: String,
@@ -74,7 +74,7 @@ pub struct UpdatePostRequest {
 
 
 
-fn seed_authors() -> HashMap<Uuid, Author> {
+pub async fn seed_authors() -> HashMap<Uuid, Author> {
     let authors = vec![
         Author::new(
             Uuid::new_v4(),
@@ -90,6 +90,8 @@ fn seed_authors() -> HashMap<Uuid, Author> {
 
     authors.into_iter().map(|a| (a.id, a)).collect()
 }
+
+
 
 
 // pub async fn find_posts(&self, author_id: Option<u16>) -> Vec<Post> {
