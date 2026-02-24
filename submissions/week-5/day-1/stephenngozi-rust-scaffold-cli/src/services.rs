@@ -57,12 +57,9 @@ edition = "2021"
     );
 
     write_file(&format!("{}/Cargo.toml", project_name), &cargo_toml)?;
-
-    // --------------------------------------------------------
     // Write .env file
-    // --------------------------------------------------------
+    
     write_file(&format!("{}/.env", project_name), framework.env_content())?;
-
     
     // Write .gitignore
     

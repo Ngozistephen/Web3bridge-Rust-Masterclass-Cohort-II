@@ -56,7 +56,7 @@ pub fn prompt_framework(provided: Option<String>) -> Framework {
 // Print the success summary after scaffolding completes
 pub fn print_success_summary(project_name: &str) {
     println!();
-    println!("  {}", "✅ Project scaffolded successfully!".green().bold());
+    println!("  {}", " Project scaffolded successfully!".green().bold());
     println!();
     println!("  {}", "Generated structure:".bold());
     println!("  {}/", project_name.bright_cyan());

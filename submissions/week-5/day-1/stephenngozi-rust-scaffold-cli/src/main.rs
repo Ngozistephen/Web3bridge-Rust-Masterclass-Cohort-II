@@ -10,18 +10,9 @@ use colored::*;
 use cli::{Cli, SubCommand};
 
 
-
-
-
-
-
-
-
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let cli = Cli::parse();
-
 
     println!();
     println!(
@@ -38,10 +29,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match cli.command.unwrap_or(SubCommand::New) {
         SubCommand::New => {
             let project_name = handlers::prompt_project_name(cli.name);
-
-          
             
-           
             let framework = handlers::prompt_framework(cli.framework);
 
             
